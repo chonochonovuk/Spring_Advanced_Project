@@ -77,9 +77,11 @@ public class BlogServiceImpl implements BlogService {
 
     @Override
     public BlogServiceModel addBlog(BlogServiceModel blogServiceModel) {
-        blogServiceModel.getComments().forEach(blogCommentService::addBlogComment);
-        blogServiceModel.setComments(blogServiceModel.getComments().stream().
-                map(blogCommentServiceModel -> this.blogCommentService.findByTitle(blogCommentServiceModel.getTitle())).collect(Collectors.toSet()));
+        if (blogServiceModel.getComments() != null){
+            blogServiceModel.getComments().forEach(blogCommentService::addBlogComment);
+            blogServiceModel.setComments(blogServiceModel.getComments().stream().
+                    map(blogCommentServiceModel -> this.blogCommentService.findByTitle(blogCommentServiceModel.getTitle())).collect(Collectors.toSet()));
+        }
        blogServiceModel.setArchived(false);
        blogServiceModel.setLockForComments(false);
         Blog blog = this.modelMapper.map(blogServiceModel,Blog.class);
