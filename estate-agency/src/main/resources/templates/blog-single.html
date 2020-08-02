@@ -49,7 +49,7 @@
                     <img src="/images/person_1.jpg" alt="Image placeholder">
                   </div>
                   <div class="comment-body">
-                    <h3 th:text="|${comment.author.firstName},  ,${comment.author.lastName} |">John Doe</h3>
+                    <h3 th:text="|${comment.author.firstName}  ${comment.author.lastName} |">John Doe</h3>
                     <div class="meta" th:text="${#temporals.format(comment.publishedAt,'dd-MM-yyyy HH:mm')}">June 01, 2020 at 2:21pm</div>
                     <h4 class="mb-3" th:text="${comment.title}">It is a long established fact a reader be distracted</h4>
                     <p th:text="${comment.content}"></p>

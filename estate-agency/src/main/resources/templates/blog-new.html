@@ -32,7 +32,7 @@
                 <div class="pt-5 mt-5">
                     <div class="comment-form-wrap pt-5">
                         <h3 class="mb-5">Create a New Blog</h3>
-                        <form th:action="@{/blog-add}"  th:object="${blog}" method="POST" class="p-5 bg-light">
+                        <form th:action="@{/blog-add}"  th:object="${blogAddBindingModel}" method="POST" class="p-5 bg-light">
                             <div class="form-group">
                                 <label for="title">Title *</label>
                                 <input th:field="*{title}" type="text" class="form-control" id="title" name="title">

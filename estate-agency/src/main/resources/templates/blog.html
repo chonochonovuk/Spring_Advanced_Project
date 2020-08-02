@@ -67,6 +67,7 @@
                     </form>
                   </div>
                 </div>
+                  <p>Author : <a th:href="@{/blog/details/{title}(title=${blog.title})}" th:text="| ${blog.author.firstName} ${blog.author.lastName} |">John Doe</a></p>
 	              <h3 class="heading"><a th:href="@{/blog/details/{title}(title=${blog.title})}" th:text="${blog.title}">Why Lead Generation is Key for Business Growth</a></h3>
               </div>
             </div>
@@ -84,6 +85,7 @@
                       <div th:unless="${blog.archived}"><p>Active</p></div>
                      <div><a th:href="@{/blog/details/{title}(title=${blog.title})}" class="meta-chat" th:text="${blog.getComments().size()}"><span class="fa fa-comment"></span> 3</a></div>
                       </div>
+                      <p>Author : <a th:href="@{/blog/details/{title}(title=${blog.title})}" th:text="| ${blog.author.firstName} ${blog.author.lastName} |">John Doe</a></p>
                       <h3 class="heading"><a th:href="@{/blog/details/{title}(title=${blog.title})}" th:text="${blog.title}">Why Lead Generation is Key for Business Growth</a></h3>
                     </div>
                   </div>

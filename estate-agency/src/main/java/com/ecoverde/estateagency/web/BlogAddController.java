@@ -33,8 +33,8 @@ public class BlogAddController {
 
     @GetMapping
     public String addNewBlog(Model model){
-        if (!model.containsAttribute("blog")){
-            model.addAttribute("blog",new BlogAddBindingModel());
+        if (!model.containsAttribute("blogAddBindingModel")){
+            model.addAttribute("blogAddBindingModel",new BlogAddBindingModel());
         }
         return "blog-new";
     }
@@ -54,6 +54,8 @@ public class BlogAddController {
 
         if (this.blogService.findByTitle(blogAddBindingModel.getTitle()) != null){
             bindingResult.rejectValue("title","error.title","This title already exist!");
+            re.addFlashAttribute("blogAddBindingModel",blogAddBindingModel);
+            re.addFlashAttribute("org.springframework.validation.BindingResult.blogAddBindingModel",bindingResult);
             modelAndView.setViewName("redirect:blog-add");
             return modelAndView;
         }
