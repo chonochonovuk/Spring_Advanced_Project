@@ -6,7 +6,7 @@ import java.math.BigDecimal;
 
 public class PropertySearchModel {
     private String keyword;
-    private PropertyType propertyType;
+    private String propertyType;
     private String location;
     private BigDecimal price;
 
@@ -21,11 +21,11 @@ public class PropertySearchModel {
         this.keyword = keyword;
     }
 
-    public PropertyType getPropertyType() {
+    public String getPropertyType() {
         return propertyType;
     }
 
-    public void setPropertyType(PropertyType propertyType) {
+    public void setPropertyType(String propertyType) {
         this.propertyType = propertyType;
     }
 

@@ -8,6 +8,7 @@ import java.util.Set;
 @Entity
 @Table(name = "properties")
 public class Property extends BaseEntity{
+    private String propertyName;
     private PropertyType propertyType;
     private Town town;
     private Address address;
@@ -19,10 +20,18 @@ public class Property extends BaseEntity{
     private String description;
     private BigDecimal price;
     private User owner;
-    private Set<Image> photos;
+    private Image photos;
 
 
     public Property() {
+    }
+
+    public String getPropertyName() {
+        return propertyName;
+    }
+
+    public void setPropertyName(String propertyName) {
+        this.propertyName = propertyName;
     }
 
     @ManyToOne
@@ -124,12 +133,12 @@ public class Property extends BaseEntity{
         this.owner = owner;
     }
 
-    @OneToMany
-    public Set<Image> getPhotos() {
+    @OneToOne
+    public Image getPhotos() {
         return photos;
     }
 
-    public void setPhotos(Set<Image> photos) {
+    public void setPhotos(Image photos) {
         this.photos = photos;
     }
 }

@@ -1,19 +1,17 @@
 package com.ecoverde.estateagency.service.impl;
 
+import com.ecoverde.estateagency.model.binding.PropertyAddBindingModel;
 import com.ecoverde.estateagency.model.entity.Address;
 import com.ecoverde.estateagency.model.entity.Image;
 import com.ecoverde.estateagency.model.entity.Property;
-import com.ecoverde.estateagency.model.entity.Town;
-import com.ecoverde.estateagency.model.service.AddressServiceModel;
-import com.ecoverde.estateagency.model.service.PropertyServiceModel;
-import com.ecoverde.estateagency.model.service.PropertyTypeServiceModel;
-import com.ecoverde.estateagency.model.service.TownServiceModel;
+import com.ecoverde.estateagency.model.service.*;
 import com.ecoverde.estateagency.model.view.PropertyViewModel;
 import com.ecoverde.estateagency.repositories.PropertyRepository;
 import com.ecoverde.estateagency.service.*;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -28,15 +26,17 @@ public class PropertyServiceImpl implements PropertyService {
     private final PropertyRepository propertyRepository;
     private final PropertyTypeService propertyTypeService;
     private final ImageService imageService;
+    private final CloudinaryService cloudinaryService;
     private final AddressService addressService;
     private final TownService townService;
     private final UserService userService;
     private final ModelMapper modelMapper;
 
-    public PropertyServiceImpl(PropertyRepository propertyRepository, PropertyTypeService propertyTypeService, ImageService imageService, AddressService addressService, TownService townService, UserService userService, ModelMapper modelMapper) {
+    public PropertyServiceImpl(PropertyRepository propertyRepository, PropertyTypeService propertyTypeService, ImageService imageService, CloudinaryService cloudinaryService, AddressService addressService, TownService townService, UserService userService, ModelMapper modelMapper) {
         this.propertyRepository = propertyRepository;
         this.propertyTypeService = propertyTypeService;
         this.imageService = imageService;
+        this.cloudinaryService = cloudinaryService;
         this.addressService = addressService;
         this.townService = townService;
         this.userService = userService;
@@ -56,6 +56,7 @@ public class PropertyServiceImpl implements PropertyService {
             PropertyTypeServiceModel pt2 = new PropertyTypeServiceModel();
             pt2.setTypeName("House");
             PropertyServiceModel prop2 = new PropertyServiceModel();
+            prop2.setPropertyName("Sveti Vlas Pirin");
             prop2.setPropertyTypeServiceModel(pt2);
             prop2.setTownServiceModel(t2);
             prop2.setAddressServiceModel(addr2);
@@ -69,14 +70,9 @@ public class PropertyServiceImpl implements PropertyService {
             prop2.setDate(LocalDate.parse("2020-07-17", DateTimeFormatter.ofPattern("yyyy-MM-dd")));
             prop2.setYear(2006);
             prop2.setSize(242);
-            Set<Image> hPhotos = new HashSet<>();
             Image img3 = new Image();
             img3.setUrl("/images/burgas/stVlas/house1.jpg");
-            hPhotos.add(img3);
-            Image img4 = new Image();
-            img4.setUrl("/images/burgas/stVlas/house2.jpg");
-            hPhotos.add(img4);
-            prop2.setPhotos(hPhotos);
+            prop2.setPhotos(img3);
             prop2.setOwner(this.userService.findByUsername("jana66"));
             this.addProperty(prop2);
 
@@ -91,6 +87,7 @@ public class PropertyServiceImpl implements PropertyService {
             PropertyTypeServiceModel ptsm = new PropertyTypeServiceModel();
             ptsm.setTypeName("Apartment");
             PropertyServiceModel prop1 = new PropertyServiceModel();
+            prop1.setPropertyName("sofia center ml");
             prop1.setPropertyTypeServiceModel(ptsm);
             prop1.setTownServiceModel(town1);
             prop1.setAddressServiceModel(addr1);
@@ -101,14 +98,9 @@ public class PropertyServiceImpl implements PropertyService {
             prop1.setDate(LocalDate.parse("2020-06-22", DateTimeFormatter.ofPattern("yyyy-MM-dd")));
             prop1.setYear(2002);
             prop1.setSize(116);
-            Set<Image> apPhotos = new HashSet<>();
             Image img = new Image();
             img.setUrl("/images/sofia/center/marialuiza/255197956.jpg");
-            apPhotos.add(img);
-            Image img2 = new Image();
-            img2.setUrl("/images/sofia/center/marialuiza/255197982.jpg");
-            apPhotos.add(img2);
-            prop1.setPhotos(apPhotos);
+            prop1.setPhotos(img);
             prop1.setOwner(this.userService.findByUsername("ivan56"));
            this.addProperty(prop1);
 
@@ -121,15 +113,68 @@ public class PropertyServiceImpl implements PropertyService {
     }
 
     @Override
-    public PropertyServiceModel findByAddress(AddressServiceModel addressServiceModel) {
-        return this.propertyRepository.findByAddress(this.modelMapper.map(addressServiceModel,Address.class))
+    public PropertyServiceModel findByPropertyName(String propertyName) {
+        return this.propertyRepository.findByPropertyName(propertyName)
                 .map(property -> this.modelMapper.map(property,PropertyServiceModel.class))
                 .orElse(null);
     }
 
     @Override
+    public PropertyServiceModel mapBindingModelToService(PropertyAddBindingModel propertyAddBindingModel) throws IOException {
+        PropertyServiceModel psm = new PropertyServiceModel();
+        if (propertyAddBindingModel != null){
+            this.userService.userSetRole(propertyAddBindingModel.getUsername(),"ROLE_OWNER");
+            psm.setOwner(this.userService.findByUsername(propertyAddBindingModel.getUsername()));
+            TownServiceModel tsm1 = new TownServiceModel();
+            tsm1.setName(propertyAddBindingModel.getTown());
+            psm.setTownServiceModel(tsm1);
+            AddressServiceModel asm1 = new AddressServiceModel();
+            asm1.setArea(propertyAddBindingModel.getArea());
+            asm1.setFullAddress(propertyAddBindingModel.getFullAddress());
+            psm.setAddressServiceModel(asm1);
+            PropertyTypeServiceModel ptsm1 = new PropertyTypeServiceModel();
+            ptsm1.setTypeName(propertyAddBindingModel.getPropertyType());
+            psm.setPropertyTypeServiceModel(ptsm1);
+            psm.setPropertyName(propertyAddBindingModel.getPropertyName());
+            psm.setDescription(propertyAddBindingModel.getDescription());
+            psm.setPrice(propertyAddBindingModel.getPrice());
+            psm.setBathrooms(propertyAddBindingModel.getBathrooms());
+            psm.setRooms(propertyAddBindingModel.getRooms());
+            psm.setDate(LocalDate.now());
+            psm.setYear(propertyAddBindingModel.getYear());
+            psm.setSize(propertyAddBindingModel.getSize());
+            Image propImage = new Image();
+            propImage.setUrl(this.cloudinaryService.uploadImage(propertyAddBindingModel.getImageUrl()));
+            psm.setPhotos(propImage);
+        }
+
+        return psm;
+    }
+
+    @Override
     public List<PropertyViewModel> findByKeyword(String keyword) {
         return this.propertyRepository.findAllByDescriptionContaining(keyword).stream()
+                .map(property -> this.modelMapper.map(property,PropertyViewModel.class))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<PropertyViewModel> findAllByPropertyType(String propertyType) {
+        return this.propertyRepository.findAllByPropertyType(propertyType).stream()
+                .map(property -> this.modelMapper.map(property,PropertyViewModel.class))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<PropertyViewModel> findAllByTownOrAddress(String townOrAddress) {
+        return this.propertyRepository.findAllByTownOrAddress(townOrAddress).stream()
+                .map(property -> this.modelMapper.map(property,PropertyViewModel.class))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<PropertyViewModel> findAllByPrice(BigDecimal price) {
+        return this.propertyRepository.findAllByPrice(price).stream()
                 .map(property -> this.modelMapper.map(property,PropertyViewModel.class))
                 .collect(Collectors.toList());
     }
@@ -156,13 +201,16 @@ public class PropertyServiceImpl implements PropertyService {
             propertyServiceModel.setAddressServiceModel(this.addressService.findByFullAddress(
                     propertyServiceModel.getAddressServiceModel().getFullAddress()));
 
-        propertyServiceModel.getPhotos().forEach(this.imageService::addImage);
-        propertyServiceModel.setPhotos(propertyServiceModel.getPhotos().stream().
-                map(image -> this.imageService.findByUrl(image.getUrl()))
-        .collect(Collectors.toSet()));
+            if (propertyServiceModel.getPhotos() != null){
+                this.imageService.addImage(propertyServiceModel.getPhotos());
+                propertyServiceModel.setPhotos(this.imageService.findByUrl(propertyServiceModel.getPhotos().getUrl()));
+            }else {
+                propertyServiceModel.setPhotos(this.imageService.findByUrl("/images/burgas/stVlas/house1.jpg"));
+            }
+
         propertyServiceModel.setOwner(this.userService.findByUsername(propertyServiceModel.getOwner().getUsername()));
         Property property = this.modelMapper.map(propertyServiceModel,Property.class);
-        if (this.findByAddress(propertyServiceModel.getAddressServiceModel()) == null){
+        if (this.findByPropertyName(propertyServiceModel.getPropertyName()) == null){
             this.propertyRepository.saveAndFlush(property);
         }
 

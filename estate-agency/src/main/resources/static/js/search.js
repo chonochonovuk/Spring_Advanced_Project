@@ -15,6 +15,9 @@ function fire_ajax_submit() {
 
     let search = {}
     search["keyword"] = $("#keyword").val();
+    search["type"] = $("#type").val();
+    search["location"] = $("#location").val();
+    search["price"] = $("price").val();
 
     $("#btn-search").prop("disabled", true);
 

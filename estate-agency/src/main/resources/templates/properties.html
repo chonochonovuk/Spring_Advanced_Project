@@ -49,7 +49,7 @@
 		                      <select name="type" id="type" class="form-control bg-dark">
 								  <option value="">Property type</option>
 								  <option  class="bg-dark" th:each="o : ${allPropertyTypes}"
-										   th:text="${o}" th:value="${o}">House</option>
+										   th:text="${o.typeName}" th:value="${o.typeName}">House</option>
 
 		                      </select>
 		                    </div>
@@ -58,16 +58,16 @@
 		        			</div>
 		        			<div class="col-lg align-items-end">
 		        				<div class="form-group">
-		        					<label for="#">Location</label>
+		        					<label for="location">Location</label>
 		          				<div class="form-field">
 		          					<div class="icon"><span class="fa fa-search"></span></div>
-				                <input type="text" class="form-control" placeholder="Location">
+				                <input type="text" class="form-control" placeholder="Location" id="location">
 				              </div>
 			              </div>
 		        			</div>
 		        			<div class="col-lg align-items-end">
 		        				<div class="form-group">
-		        					<label for="#">Price Limit</label>
+		        					<label for="price">Price Limit</label>
 		        					<div class="form-field">
 		          					<div class="select-wrap">
 		                      <div class="icon"><span class="fa fa-chevron-down"></span></div>

@@ -7,6 +7,8 @@ import java.time.LocalDate;
 import java.util.Set;
 
 public class PropertyServiceModel extends BaseServiceModel{
+
+    private String propertyName;
     private PropertyTypeServiceModel propertyTypeServiceModel;
     private TownServiceModel townServiceModel;
     private AddressServiceModel addressServiceModel;
@@ -18,9 +20,17 @@ public class PropertyServiceModel extends BaseServiceModel{
     private String description;
     private BigDecimal price;
     private UserServiceModel owner;
-    private Set<Image> photos;
+    private Image photos;
 
     public PropertyServiceModel() {
+    }
+
+    public String getPropertyName() {
+        return propertyName;
+    }
+
+    public void setPropertyName(String propertyName) {
+        this.propertyName = propertyName;
     }
 
     public PropertyTypeServiceModel getPropertyTypeServiceModel() {
@@ -111,11 +121,11 @@ public class PropertyServiceModel extends BaseServiceModel{
         this.owner = owner;
     }
 
-    public Set<Image> getPhotos() {
+    public Image getPhotos() {
         return photos;
     }
 
-    public void setPhotos(Set<Image> photos) {
+    public void setPhotos(Image photos) {
         this.photos = photos;
     }
 }
