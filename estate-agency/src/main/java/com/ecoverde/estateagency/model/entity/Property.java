@@ -43,7 +43,7 @@ public class Property extends BaseEntity{
         this.propertyType = propertyType;
     }
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     public Town getTown() {
         return town;
     }
@@ -52,7 +52,7 @@ public class Property extends BaseEntity{
         this.town = town;
     }
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.EAGER)
     public Address getAddress() {
         return address;
     }
@@ -124,7 +124,7 @@ public class Property extends BaseEntity{
         this.price = price;
     }
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.EAGER)
     public User getOwner() {
         return owner;
     }

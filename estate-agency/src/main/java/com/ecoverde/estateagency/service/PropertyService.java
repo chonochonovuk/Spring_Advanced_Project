@@ -2,6 +2,7 @@ package com.ecoverde.estateagency.service;
 
 
 import com.ecoverde.estateagency.model.binding.PropertyAddBindingModel;
+import com.ecoverde.estateagency.model.binding.PropertySearchModel;
 import com.ecoverde.estateagency.model.entity.Address;
 import com.ecoverde.estateagency.model.entity.Property;
 import com.ecoverde.estateagency.model.service.AddressServiceModel;
@@ -21,15 +22,17 @@ public interface PropertyService {
 
     PropertyServiceModel mapBindingModelToService(PropertyAddBindingModel propertyAddBindingModel) throws IOException;
 
-    List<PropertyViewModel> findByKeyword(String keyword);
+    Set<PropertyViewModel> findByKeyword(String keyword);
 
-    List<PropertyViewModel> findAllByPropertyType(String propertyType);
+    Set<PropertyViewModel> findAllByPropertyType(String propertyType);
 
-    List<PropertyViewModel> findAllByTownOrAddress(String townOrAddress);
+    Set<PropertyViewModel> findAllByTownOrAddress(String townOrAddress);
 
-    List<PropertyViewModel> findAllByPrice(BigDecimal price);
+    Set<PropertyViewModel> findAllByPrice(BigDecimal price);
 
     List<PropertyViewModel> findAllProperties();
+
+    Set<PropertyViewModel> findAllProperties(PropertySearchModel propertySearchModel);
 
     PropertyServiceModel addProperty(PropertyServiceModel propertyServiceModel);
 }

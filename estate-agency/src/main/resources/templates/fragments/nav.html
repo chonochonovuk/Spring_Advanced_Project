@@ -15,7 +15,7 @@
                     <li sec:authorize="hasRole('ROLE_ADMIN')" class="nav-item active"><a class="nav-link" th:href="@{/admin/manage-users}">Admin</a></li>
                     <li sec:authorize="hasRole('ROLE_MODERATOR')" class="nav-item active"><a class="nav-link" th:href="@{/blog}">Moderator</a></li>
                     <li sec:authorize="hasRole('ROLE_AGENT')"class="nav-item active"><a class="nav-link" th:href="@{/property-add}">Add Property</a></li>
-                    <li class="nav-item active"><a href="properties.html" class="nav-link">Properties</a></li>
+                    <li class="nav-item active"><a th:href="@{/property}" class="nav-link">Properties</a></li>
                     <li class="nav-item"><a th:href="@{/blog}" class="nav-link">Blog</a></li>
                     <li class="nav-item">
                         <form th:action="@{/logout}" method="post">

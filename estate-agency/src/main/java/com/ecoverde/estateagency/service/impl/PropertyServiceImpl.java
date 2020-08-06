@@ -1,6 +1,7 @@
 package com.ecoverde.estateagency.service.impl;
 
 import com.ecoverde.estateagency.model.binding.PropertyAddBindingModel;
+import com.ecoverde.estateagency.model.binding.PropertySearchModel;
 import com.ecoverde.estateagency.model.entity.Address;
 import com.ecoverde.estateagency.model.entity.Image;
 import com.ecoverde.estateagency.model.entity.Property;
@@ -15,9 +16,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -114,9 +113,15 @@ public class PropertyServiceImpl implements PropertyService {
 
     @Override
     public PropertyServiceModel findByPropertyName(String propertyName) {
-        return this.propertyRepository.findByPropertyName(propertyName)
-                .map(property -> this.modelMapper.map(property,PropertyServiceModel.class))
-                .orElse(null);
+        Property property = this.propertyRepository.findByPropertyName(propertyName).orElse(null);
+        PropertyServiceModel psmView = this.modelMapper.map(property,PropertyServiceModel.class);
+        if (property != null){
+            psmView.setPropertyTypeServiceModel(this.propertyTypeService.findByTypename(property.getPropertyType().getTypeName()));
+            psmView.setAddressServiceModel(this.addressService.findByFullAddress(property.getAddress().getFullAddress()));
+            psmView.setTownServiceModel(this.townService.findByName(property.getTown().getName()));
+            psmView.setOwner(this.userService.findByUsername(property.getOwner().getUsername()));
+        }
+        return psmView;
     }
 
     @Override
@@ -152,31 +157,31 @@ public class PropertyServiceImpl implements PropertyService {
     }
 
     @Override
-    public List<PropertyViewModel> findByKeyword(String keyword) {
+    public Set<PropertyViewModel> findByKeyword(String keyword) {
         return this.propertyRepository.findAllByDescriptionContaining(keyword).stream()
                 .map(property -> this.modelMapper.map(property,PropertyViewModel.class))
-                .collect(Collectors.toList());
+                .collect(Collectors.toSet());
     }
 
     @Override
-    public List<PropertyViewModel> findAllByPropertyType(String propertyType) {
+    public Set<PropertyViewModel> findAllByPropertyType(String propertyType) {
         return this.propertyRepository.findAllByPropertyType(propertyType).stream()
                 .map(property -> this.modelMapper.map(property,PropertyViewModel.class))
-                .collect(Collectors.toList());
+                .collect(Collectors.toSet());
     }
 
     @Override
-    public List<PropertyViewModel> findAllByTownOrAddress(String townOrAddress) {
+    public Set<PropertyViewModel> findAllByTownOrAddress(String townOrAddress) {
         return this.propertyRepository.findAllByTownOrAddress(townOrAddress).stream()
                 .map(property -> this.modelMapper.map(property,PropertyViewModel.class))
-                .collect(Collectors.toList());
+                .collect(Collectors.toSet());
     }
 
     @Override
-    public List<PropertyViewModel> findAllByPrice(BigDecimal price) {
+    public Set<PropertyViewModel> findAllByPrice(BigDecimal price) {
         return this.propertyRepository.findAllByPrice(price).stream()
                 .map(property -> this.modelMapper.map(property,PropertyViewModel.class))
-                .collect(Collectors.toList());
+                .collect(Collectors.toSet());
     }
 
     @Override
@@ -184,6 +189,86 @@ public class PropertyServiceImpl implements PropertyService {
         return this.propertyRepository.findAll().stream()
                 .map(property -> this.modelMapper.map(property,PropertyViewModel.class))
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public Set<PropertyViewModel> findAllProperties(PropertySearchModel propertySearchModel) {
+        Set<PropertyViewModel> matchingProperties = new TreeSet<>(Comparator.comparing(PropertyViewModel::getPropertyName));
+        Set<PropertyViewModel> foundProperties = new TreeSet<>(Comparator.comparing(PropertyViewModel::getPropertyName));
+
+        if (!propertySearchModel.getKeyword().isEmpty()){
+            if (this.propertyRepository.findAllByDescriptionContaining(propertySearchModel.getKeyword()).isEmpty()){
+                matchingProperties.clear();
+                return matchingProperties;
+            }
+
+            if (matchingProperties.isEmpty()){
+                matchingProperties.addAll(this.findByKeyword(propertySearchModel.getKeyword()));
+                if (matchingProperties.isEmpty()){
+                    return matchingProperties;
+                }
+            }
+
+        }
+        if (!propertySearchModel.getPropertyType().isEmpty()){
+            if (this.propertyRepository.findAllByPropertyType(propertySearchModel.getPropertyType()).isEmpty()){
+                matchingProperties.clear();
+                return matchingProperties;
+            }
+
+            if (matchingProperties.isEmpty()){
+                matchingProperties.addAll(this.findAllByPropertyType(propertySearchModel.getPropertyType()));
+            }else {
+                foundProperties.addAll(this.findAllByPropertyType(propertySearchModel.getPropertyType()));
+                matchingProperties.retainAll(foundProperties);
+                foundProperties.clear();
+                if (matchingProperties.isEmpty()){
+                    return matchingProperties;
+                }
+            }
+        }
+        if (!propertySearchModel.getLocation().isEmpty()){
+            if (this.propertyRepository.findAllByTownOrAddress(propertySearchModel.getLocation()).isEmpty()){
+                matchingProperties.clear();
+                return matchingProperties;
+            }
+
+            if (matchingProperties.isEmpty()){
+                matchingProperties.addAll(this.findAllByTownOrAddress(propertySearchModel.getLocation()));
+            }else {
+                foundProperties.addAll(this.findAllByTownOrAddress(propertySearchModel.getLocation()));
+                matchingProperties.retainAll(foundProperties);
+                foundProperties.clear();
+                if (matchingProperties.isEmpty()){
+                    return matchingProperties;
+                }
+            }
+
+        }
+
+        if (propertySearchModel.getPrice() != null || propertySearchModel.getPrice().compareTo(BigDecimal.ZERO) > 0){
+            if (this.propertyRepository.findAllByPrice(propertySearchModel.getPrice()).isEmpty()){
+                matchingProperties.clear();
+                return matchingProperties;
+            }
+
+            if (matchingProperties.isEmpty()){
+                matchingProperties.addAll(this.findAllByPrice(propertySearchModel.getPrice()));
+            }else {
+                foundProperties.addAll(this.findAllByPrice(propertySearchModel.getPrice()));
+                matchingProperties.retainAll(foundProperties);
+                if (matchingProperties.isEmpty()){
+                    return matchingProperties;
+                }
+            }
+
+        }
+
+        if (matchingProperties.isEmpty()){
+            matchingProperties.addAll(this.findAllProperties());
+        }
+
+        return matchingProperties;
     }
 
     @Override

@@ -2,6 +2,7 @@ $(document).ready(function () {
 
     $("#search-form").submit(function (event) {
 
+
         //stop submit the form, we will post it manually.
         event.preventDefault();
 
@@ -15,16 +16,19 @@ function fire_ajax_submit() {
 
     let search = {}
     search["keyword"] = $("#keyword").val();
-    search["type"] = $("#type").val();
+    search["propertyType"] = $("#propertyType").children("option:selected").val();
     search["location"] = $("#location").val();
-    search["price"] = $("price").val();
+    search["price"] = $("#price").children("option:selected").val();
 
-    $("#btn-search").prop("disabled", true);
+    $("#bth-search").prop("disabled", true);
+
+    let token = $("meta[name='_csrf']").attr("content");
 
     $.ajax({
         type: "POST",
         contentType: "application/json",
         url: "/search",
+        headers: {"X-CSRF-TOKEN": token},
         data: JSON.stringify(search),
         dataType: 'json',
         cache: false,
@@ -43,17 +47,17 @@ function fire_ajax_submit() {
             }else {
                 $.each(data.result, function (index,value) {
 
-                    let e = "/images/image_" + next +".jpg";
-                    let im = '<img class="card-img-top" src='+ e +' alt="Card image cap">';
+                    let im = '<img class="card-img-top" src="'+ value.photos.url +'" alt="Card image cap">';
+                    let link = '<a href="/property-details/'+ value.propertyName +'" class="btn btn-primary">Click here for more details!</a>'
 
                     collectAll +=  '<div class="col-md-4">' +
                         '<div class="card text-white bg-dark mb-3" style="width: 18rem;">' +
                         im +
                         '<div class="card-body">' +
-                        '<h5 class="card-title text-white">'+ value.address.town.name +
-                        '<p class="card-text">'+ value.address.street +'</p>' +'</h5>' +
+                        '<h5 class="card-title text-white">'+ value.town.name +
+                        '<p class="card-text">'+ value.address.area +'</p>' +'</h5>' +
                         '<p class="card-text">'+ value.description +'</p>' +
-                        '<a href="#" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal" data-name="Pussy">Click here for more details!</a>' +
+                        link +
                         '</div>'+
                         '</div>' +
                         '</div>';
@@ -66,7 +70,7 @@ function fire_ajax_submit() {
              $('#feedback').html(collectAll);
 
             console.log("SUCCESS : ", data);
-            $("#btn-search").prop("disabled", false);
+            $("#bth-search").prop("disabled", false);
 
         },
         error: function (e) {
@@ -76,7 +80,7 @@ function fire_ajax_submit() {
             $('#feedback').html(json);
 
             console.log("ERROR : ", e);
-            $("#btn-search").prop("disabled", false);
+            $("#bth-search").prop("disabled", false);
 
         }
     });

@@ -43,7 +43,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll().
                 antMatchers("/","/contact","/users/register","/login**").permitAll().
                 antMatchers("/agent").hasRole("AGENT").
-                antMatchers("/property","/blog","/users/**").authenticated().
+                antMatchers("/property","/blog","/users/**","/search").authenticated().
                 and().
                 formLogin().
                 loginPage("/login").

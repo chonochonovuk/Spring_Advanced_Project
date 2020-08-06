@@ -11,6 +11,7 @@ import org.springframework.stereotype.Repository;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 
 @Repository
@@ -19,15 +20,15 @@ public interface PropertyRepository extends JpaRepository<Property,String> {
     Optional<Property> findByPropertyName(String propertyName);
 
     @Query("SELECT p FROM Property p WHERE p.description LIKE CONCAT('%',:keyword,'%') ")
-    List<Property> findAllByDescriptionContaining(@Param("keyword") String keyword);
+    Set<Property> findAllByDescriptionContaining(@Param("keyword") String keyword);
 
     @Query("SELECT p FROM Property p WHERE p.propertyType.typeName = :propertyType ")
-    List<Property> findAllByPropertyType(@Param("propertyType") String propertyType);
+    Set<Property> findAllByPropertyType(@Param("propertyType") String propertyType);
 
     @Query("SELECT p FROM Property p WHERE p.town.name = :townOrAddress OR p.address.area = :townOrAddress OR p.address.fullAddress LIKE CONCAT('%',:townOrAddress,'%')")
-    List<Property> findAllByTownOrAddress(@Param("townOrAddress") String townOrAddress);
+    Set<Property> findAllByTownOrAddress(@Param("townOrAddress") String townOrAddress);
 
     @Query("SELECT p FROM Property p WHERE p.price <= :price ")
-    List<Property> findAllByPrice(@Param("price") BigDecimal price);
+    Set<Property> findAllByPrice(@Param("price") BigDecimal price);
 
 }

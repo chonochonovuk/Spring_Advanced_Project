@@ -11,10 +11,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigDecimal;
+
 import java.util.*;
 
 @RestController
+@CrossOrigin(origins = "/property")
 @RequestMapping("/search")
 public class SearchController {
     private final PropertyService propertyService;
@@ -33,7 +34,7 @@ public class SearchController {
    @PostMapping
     public ResponseEntity<AjaxResponseBody> getSearchResultWithAjax(@RequestBody PropertySearchModel propertySearchModel){
         AjaxResponseBody result = new AjaxResponseBody();
-        List<PropertyViewModel> findProperty = this.findAllProperties(propertySearchModel);
+        Set<PropertyViewModel> findProperty = this.propertyService.findAllProperties(propertySearchModel);
 
        if (findProperty.isEmpty()){
           result.setMessage("No matching results!!!");
@@ -44,25 +45,5 @@ public class SearchController {
         return ResponseEntity.ok(result);
    }
 
-    private List<PropertyViewModel> findAllProperties(PropertySearchModel propertySearchModel) {
-        Set<PropertyViewModel> matchingProperties = new TreeSet<>(Comparator.comparing(PropertyViewModel::getPropertyName));
-        if (!propertySearchModel.getKeyword().isEmpty()){
-            matchingProperties.addAll(this.propertyService.findByKeyword(propertySearchModel.getKeyword()));
-        }
-        if (!propertySearchModel.getPropertyType().isEmpty()){
-            matchingProperties.addAll(this.propertyService.findAllByPropertyType(propertySearchModel.getPropertyType()));
-        }
-        if (!propertySearchModel.getLocation().isEmpty()){
-            matchingProperties.addAll(this.propertyService.findAllByTownOrAddress(propertySearchModel.getLocation()));
-        }
 
-        if (propertySearchModel.getPrice().compareTo(BigDecimal.ZERO) > 0){
-            matchingProperties.addAll(this.propertyService.findAllByPrice(propertySearchModel.getPrice()));
-        }
-
-        List<PropertyViewModel> all = new ArrayList<>();
-        all.addAll(matchingProperties);
-
-        return all;
-    }
 }
