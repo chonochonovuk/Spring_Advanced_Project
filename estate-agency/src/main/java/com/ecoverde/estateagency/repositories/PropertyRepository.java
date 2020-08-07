@@ -31,4 +31,16 @@ public interface PropertyRepository extends JpaRepository<Property,String> {
     @Query("SELECT p FROM Property p WHERE p.price <= :price ")
     Set<Property> findAllByPrice(@Param("price") BigDecimal price);
 
+    @Query("SELECT p FROM Property p WHERE p.propertyType.typeName = :propertyType AND p.price <= :price")
+    Set<Property> findAllByPropertyTypeAndPrice(@Param("propertyType") String propertyType,@Param("price") BigDecimal price);
+
+    @Query("SELECT p FROM Property p WHERE p.description LIKE CONCAT('%',:keyword,'%') AND p.propertyType.typeName = :propertyType AND p.price <= :price")
+    Set<Property> findAllByDescriptionContainingAndPropertyTypeAndPrice(@Param("keyword") String keyword,@Param("propertyType") String propertyType,@Param("price") BigDecimal price);
+
+    @Query("SELECT p FROM Property p WHERE p.propertyType.typeName = :propertyType AND p.price <= :price AND p.town.name = :townOrAddress OR p.address.area = :townOrAddress")
+    Set<Property> findAllByPropertyTypeAndPriceAndTownOrAddress(@Param("propertyType") String propertyType,@Param("price") BigDecimal price,@Param("townOrAddress") String townOrAddress);
+
+    @Query("SELECT p FROM Property p WHERE p.description LIKE CONCAT('%',:keyword,'%') AND p.propertyType.typeName = :propertyType AND p.price <= :price AND p.town.name = :townOrAddress OR p.address.area = :townOrAddress")
+    Set<Property> findAllByDescriptionContainingAndPropertyTypeAndPriceAndTownOrAddress(@Param("keyword") String keyword,@Param("propertyType") String propertyType,@Param("price") BigDecimal price,@Param("townOrAddress") String townOrAddress);
+
 }

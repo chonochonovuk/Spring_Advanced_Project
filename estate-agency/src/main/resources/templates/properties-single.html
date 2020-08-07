@@ -34,7 +34,7 @@
       					<img th:src="*{photos.url}">
       				</div>
       				<div class="text">
-      					<span class="subheading" th:text="*{addressServiceModel.area}">Oakland</span>
+						<span class="subheading" th:text="|*{townServiceModel.name} - *{addressServiceModel.area}|">Sofia</span>
       					<h2 th:text="*{propertyName}">The Blue Sky Home</h2>
       				</div>
       			</div>

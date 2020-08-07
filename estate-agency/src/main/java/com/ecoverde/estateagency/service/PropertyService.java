@@ -30,6 +30,14 @@ public interface PropertyService {
 
     Set<PropertyViewModel> findAllByPrice(BigDecimal price);
 
+    Set<PropertyViewModel> findAllByPropertyTypeAndPrice( String propertyType, BigDecimal price);
+
+    Set<PropertyViewModel> findAllByDescriptionContainingAndPropertyTypeAndPrice(String keyword, String propertyType, BigDecimal price);
+
+    Set<PropertyViewModel> findAllByPropertyTypeAndPriceAndTownOrAddress(String propertyType, BigDecimal price, String townOrAddress);
+
+    Set<PropertyViewModel> findAllByDescriptionContainingAndPropertyTypeAndPriceAndTownOrAddress(String keyword, String propertyType, BigDecimal price, String townOrAddress);
+
     List<PropertyViewModel> findAllProperties();
 
     Set<PropertyViewModel> findAllProperties(PropertySearchModel propertySearchModel);
