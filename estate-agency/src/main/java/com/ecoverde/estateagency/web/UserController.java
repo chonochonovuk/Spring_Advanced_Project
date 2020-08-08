@@ -54,12 +54,14 @@ public class UserController {
 
         if (this.userService.findByUsername(userRegisterBindingModel.getUsername()) != null){
             bindingResult.rejectValue("username","error.username","This username already exist!");
+            redirectAttributes.addFlashAttribute("userRegisterBindingModel",userRegisterBindingModel);
+            redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.userRegisterBindingModel",bindingResult);
             modelAndView.setViewName("redirect:register");
             return modelAndView;
         }
 
         this.userService.register(this.modelMapper.map(userRegisterBindingModel, UserServiceModel.class));
-        modelAndView.setViewName("redirect:login");
+        modelAndView.setViewName("redirect:/login");
         return modelAndView;
 
     }

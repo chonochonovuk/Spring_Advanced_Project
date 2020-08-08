@@ -29,6 +29,15 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
+    public void addRole(String authority) {
+        if (this.roleRepository.findByAuthority(authority).isEmpty()){
+            Role role = new Role();
+            role.setAuthority(authority);
+            this.roleRepository.saveAndFlush(role);
+        }
+    }
+
+    @Override
     public void rolesInit(){
         if (this.roleRepository.count() == 0){
             Role root = new Role();

@@ -10,6 +10,7 @@ import com.ecoverde.estateagency.model.view.PropertyViewModel;
 import com.ecoverde.estateagency.repositories.PropertyRepository;
 import com.ecoverde.estateagency.service.*;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -31,6 +32,7 @@ public class PropertyServiceImpl implements PropertyService {
     private final UserService userService;
     private final ModelMapper modelMapper;
 
+    @Autowired
     public PropertyServiceImpl(PropertyRepository propertyRepository, PropertyTypeService propertyTypeService, ImageService imageService, CloudinaryService cloudinaryService, AddressService addressService, TownService townService, UserService userService, ModelMapper modelMapper) {
         this.propertyRepository = propertyRepository;
         this.propertyTypeService = propertyTypeService;
@@ -110,8 +112,9 @@ public class PropertyServiceImpl implements PropertyService {
     @Override
     public PropertyServiceModel findByPropertyName(String propertyName) {
         Property property = this.propertyRepository.findByPropertyName(propertyName).orElse(null);
-        PropertyServiceModel psmView = this.modelMapper.map(property, PropertyServiceModel.class);
+        PropertyServiceModel psmView = null;
         if (property != null) {
+            psmView = this.modelMapper.map(property, PropertyServiceModel.class);
             psmView.setPropertyTypeServiceModel(this.propertyTypeService.findByTypename(property.getPropertyType().getTypeName()));
             psmView.setAddressServiceModel(this.addressService.findByFullAddress(property.getAddress().getFullAddress()));
             psmView.setTownServiceModel(this.townService.findByName(property.getTown().getName()));
@@ -144,9 +147,11 @@ public class PropertyServiceImpl implements PropertyService {
             psm.setDate(LocalDate.now());
             psm.setYear(propertyAddBindingModel.getYear());
             psm.setSize(propertyAddBindingModel.getSize());
-            Image propImage = new Image();
-            propImage.setUrl(this.cloudinaryService.uploadImage(propertyAddBindingModel.getImageUrl()));
-            psm.setPhotos(propImage);
+            if (propertyAddBindingModel.getImageUrl() != null){
+                Image propImage = new Image();
+                propImage.setUrl(this.cloudinaryService.uploadImage(propertyAddBindingModel.getImageUrl()));
+                psm.setPhotos(propImage);
+            }
         }
 
         return psm;

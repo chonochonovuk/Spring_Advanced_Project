@@ -21,7 +21,7 @@ public class UserRegisterBindingModel {
     public UserRegisterBindingModel() {
     }
 
-    @Length(min = 6, message = "Minimum 6 characters length")
+    @Length(min = 4, message = "Minimum 4 characters length")
     public String getUsername() {
         return username;
     }
@@ -48,7 +48,7 @@ public class UserRegisterBindingModel {
     }
 
 
-    @Pattern(regexp = "(\\+359|0)[0-9]{8,9}",
+    @Pattern(regexp = "(\\+359|0)[0-9]{9}",
     message = "Enter valid phone number!")
     public String getPhoneNumber() {
         return phoneNumber;

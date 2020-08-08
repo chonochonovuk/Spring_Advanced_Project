@@ -6,6 +6,7 @@ import com.ecoverde.estateagency.repositories.BlogCommentRepository;
 import com.ecoverde.estateagency.service.BlogCommentService;
 import com.ecoverde.estateagency.service.UserService;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -14,6 +15,7 @@ public class BlogCommentServiceImpl implements BlogCommentService {
     private final UserService userService;
     private final ModelMapper modelMapper;
 
+    @Autowired
     public BlogCommentServiceImpl(BlogCommentRepository blogCommentRepository, UserService userService, ModelMapper modelMapper) {
         this.blogCommentRepository = blogCommentRepository;
         this.userService = userService;

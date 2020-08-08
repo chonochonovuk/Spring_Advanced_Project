@@ -6,8 +6,10 @@ import com.ecoverde.estateagency.service.RoleService;
 import com.ecoverde.estateagency.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
+@Profile("!test")
 @Component
 public class DataInit implements CommandLineRunner {
     private final UserService userService;

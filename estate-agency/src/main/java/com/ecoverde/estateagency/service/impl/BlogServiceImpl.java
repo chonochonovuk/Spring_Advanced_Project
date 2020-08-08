@@ -2,6 +2,8 @@ package com.ecoverde.estateagency.service.impl;
 
 import ch.qos.logback.core.joran.conditional.IfAction;
 import com.ecoverde.estateagency.model.entity.Blog;
+import com.ecoverde.estateagency.model.entity.Role;
+import com.ecoverde.estateagency.model.entity.User;
 import com.ecoverde.estateagency.model.service.BlogCommentServiceModel;
 import com.ecoverde.estateagency.model.service.BlogServiceModel;
 import com.ecoverde.estateagency.repositories.BlogRepository;
@@ -39,6 +41,7 @@ public class BlogServiceImpl implements BlogService {
     @Override
     public void blogsInit() {
         if(this.blogRepository.count() == 0){
+
         BlogServiceModel post1 = new BlogServiceModel();
         post1.setAuthor(this.userService.findByUsername("joanna"));
         post1.setTitle("Living In Bulgaria, A Village Life");

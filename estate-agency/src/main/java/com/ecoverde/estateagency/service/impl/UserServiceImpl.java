@@ -47,6 +47,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserServiceModel register(UserServiceModel userServiceModel) {
         User toRegister = this.modelMapper.map(userServiceModel,User.class);
+        toRegister.setEnabled(true);
+        toRegister.setCredentialsNonExpired(true);
+        toRegister.setAccountNonLocked(true);
+        toRegister.setAccountNonExpired(true);
         Set<Role> roles = new HashSet<>();
         roles.add(this.modelMapper.map(this.roleService.findByAuthority("ROLE_USER"),Role.class));
         toRegister.setAuthorities(roles);
@@ -60,13 +64,13 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserServiceModel findByUsername(String username) {
         return this.userRepository.findByUsername(username).map(user -> this.modelMapper
-        .map(user,UserServiceModel.class)).orElseThrow(() -> new UsernameNotFoundException("Username not found!"));
+        .map(user,UserServiceModel.class)).orElse(null);
     }
 
     @Override
     public UserServiceModel editUserProfile(UserServiceModel userServiceModel, String oldPassword) {
         User user = this.userRepository.findByUsername(userServiceModel.getUsername())
-                .orElseThrow(() -> new UsernameNotFoundException("User not Found!"));
+                .orElse(null);
         if (!passwordEncoder.matches(oldPassword,user.getPassword())){
             throw new IllegalArgumentException("Incorrect Password!");
         }
