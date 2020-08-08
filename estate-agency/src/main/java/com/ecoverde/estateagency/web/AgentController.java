@@ -34,7 +34,7 @@ public class AgentController {
     }
 
     @GetMapping
-   @PreAuthorize("hasRole('AGENT')")
+    @PreAuthorize("hasRole('AGENT')")
     public String addNewProperty(Model model){
         if (!model.containsAttribute("propertyAddBindingModel")){
             model.addAttribute("propertyAddBindingModel",new PropertyAddBindingModel());
@@ -43,7 +43,7 @@ public class AgentController {
     }
 
     @PostMapping
-    @PreAuthorize("hasRole('AGENT')")
+   @PreAuthorize("hasRole('AGENT')")
     public ModelAndView addNewPropertyConfirm(@Valid @ModelAttribute("propertyAddBindingModel") PropertyAddBindingModel propertyAddBindingModel,
                                               BindingResult bindingResult,
                                               RedirectAttributes redirectAttributes,

@@ -80,7 +80,7 @@ public class UserControllerTest {
     @Test
     public void testRegisterUserCorrectly() throws Exception {
         mvc.perform(post("/users/register")
-                .param("username","parti2")
+                .param("username","parti1")
                 .param("password","parti2")
                 .param("confirmPassword","parti2")
                 .param("phoneNumber","0893812345")
@@ -88,7 +88,7 @@ public class UserControllerTest {
                 .param("lastName","Penev"))
         .andExpect(view().name("redirect:/login"));
 
-     Assert.assertEquals("parti2",this.userService.findByUsername("parti2").getUsername());
+     Assert.assertEquals("parti1",this.userService.findByUsername("parti1").getUsername());
 
     }
 
@@ -98,14 +98,14 @@ public class UserControllerTest {
                 .param("username","parti2")
                 .param("password","parti2")
                 .param("confirmPassword","parti2")
-                .param("phoneNumber","0893812345")
-                .param("firstName","Pencho")
-                .param("lastName","Penev"))
+                .param("phoneNumber","0893872345")
+                .param("firstName","Peter")
+                .param("lastName","Penchev"))
                 .andExpect(view().name("redirect:/login"));
 
         UserServiceModel user = this.userService.findByUsername("parti2");
         Assert.assertNotNull(user);
-        Assert.assertEquals("Pencho",user.getFirstName());
+        Assert.assertEquals("Peter",user.getFirstName());
 
     }
 

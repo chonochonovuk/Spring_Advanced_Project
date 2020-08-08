@@ -1,8 +1,10 @@
 package com.ecoverde.estateagency.web;
 
 import com.ecoverde.estateagency.model.binding.PropertyAddBindingModel;
+import com.ecoverde.estateagency.model.binding.PropertySearchModel;
 import com.ecoverde.estateagency.model.entity.Image;
 import com.ecoverde.estateagency.model.service.*;
+import com.ecoverde.estateagency.model.view.PropertyViewModel;
 import com.ecoverde.estateagency.repositories.PropertyRepository;
 import com.ecoverde.estateagency.service.*;
 import org.junit.Assert;
@@ -21,6 +23,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Set;
 
 @ActiveProfiles("test")
 @RunWith(SpringRunner.class)
@@ -35,9 +38,6 @@ public class PropertyServiceTest {
     private PropertyService propertyService;
     @Autowired
     private PropertyTypeService propertyTypeService;
-
-    @Autowired
-    private ImageService imageService;
 
     @Autowired
     private AddressService addressService;
@@ -104,6 +104,27 @@ public class PropertyServiceTest {
     }
 
     @Test
+    public void testPropertyAddress(){
+        PropertyServiceModel propertyServiceModel = this.propertyService.findByPropertyName("Sveti Vlas Pirin");
+        Assert.assertNotNull(propertyServiceModel);
+        Assert.assertEquals("13 Pirin street",propertyServiceModel.getAddressServiceModel().getFullAddress());
+    }
+
+    @Test
+    public void testPropertyTown(){
+        PropertyServiceModel propertyServiceModel = this.propertyService.findByPropertyName("Sveti Vlas Pirin");
+        Assert.assertNotNull(propertyServiceModel);
+        Assert.assertEquals("Burgas",propertyServiceModel.getTownServiceModel().getName());
+    }
+
+    @Test
+    public void testPropertyOwner(){
+        PropertyServiceModel propertyServiceModel = this.propertyService.findByPropertyName("Sveti Vlas Pirin");
+        Assert.assertNotNull(propertyServiceModel);
+        Assert.assertEquals("pesho",propertyServiceModel.getOwner().getUsername());
+    }
+
+    @Test
     public void addProperty() throws IOException {
         PropertyAddBindingModel pbm = new PropertyAddBindingModel();
         pbm.setTown("Varna");
@@ -124,5 +145,59 @@ public class PropertyServiceTest {
         this.propertyService.addProperty(psm);
 
         Assert.assertNotNull(this.propertyService.findByPropertyName("Varna center"));
+    }
+
+
+    @Test
+    public void testPropertySearchEngine(){
+        PropertySearchModel psm = new PropertySearchModel();
+        psm.setKeyword("apt");
+        psm.setLocation("Burgas");
+        psm.setPrice(new BigDecimal(150000));
+        psm.setPropertyType("house");
+
+        Set<PropertyViewModel> propertyViewModels = this.propertyService.findAllProperties(psm);
+        PropertyViewModel propertyViewModel = this.modelMapper.map(this.propertyService.findByPropertyName("Sveti Vlas Pirin"),PropertyViewModel.class);
+        for (PropertyViewModel p: propertyViewModels) {
+
+          Assert.assertEquals(p.getPropertyName(),propertyViewModel.getPropertyName());
+
+        }
+    }
+
+    @Test
+    public void testPropertySearchByKeyword() {
+
+        Set<PropertyViewModel> propertyViewModels = this.propertyService.findByKeyword("apt");
+        PropertyViewModel propertyViewModel = this.modelMapper.map(this.propertyService.findByPropertyName("Sveti Vlas Pirin"), PropertyViewModel.class);
+        for (PropertyViewModel p : propertyViewModels) {
+
+            Assert.assertEquals(p.getPropertyName(), propertyViewModel.getPropertyName());
+
+        }
+    }
+
+    @Test
+    public void testPropertySearchByType() {
+
+        Set<PropertyViewModel> propertyViewModels = this.propertyService.findAllByPropertyType("apartment");
+        PropertyViewModel propertyViewModel = this.modelMapper.map(this.propertyService.findByPropertyName("Sveti Vlas Pirin"), PropertyViewModel.class);
+        for (PropertyViewModel p : propertyViewModels) {
+
+            Assert.assertEquals(p.getPropertyName(), propertyViewModel.getPropertyName());
+
+        }
+    }
+
+    @Test
+    public void testPropertySearchByPrice() {
+
+        Set<PropertyViewModel> propertyViewModels = this.propertyService.findAllByPrice(new BigDecimal(130000));
+        PropertyViewModel propertyViewModel = this.modelMapper.map(this.propertyService.findByPropertyName("Sveti Vlas Pirin"), PropertyViewModel.class);
+        for (PropertyViewModel p : propertyViewModels) {
+
+            Assert.assertEquals(p.getPropertyName(), propertyViewModel.getPropertyName());
+
+        }
     }
 }
