@@ -10,6 +10,7 @@ import java.util.Set;
 @Entity
 @Table(name = "users")
 public class User extends BaseEntity implements UserDetails {
+
     private String username;
     private String password;
     private boolean enabled;
@@ -48,7 +49,7 @@ public class User extends BaseEntity implements UserDetails {
     }
 
     @Override
-    @ManyToMany(targetEntity = Role.class,fetch = FetchType.EAGER)
+    @ManyToMany(targetEntity = Role.class,fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
     @JoinTable(
             name = "users_roles",
             joinColumns = @JoinColumn(name = "user_id"),

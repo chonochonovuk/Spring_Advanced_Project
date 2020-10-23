@@ -2,6 +2,7 @@ package com.ecoverde.estateagency.web;
 
 
 import com.ecoverde.estateagency.model.binding.BlogCommentBindingModel;
+import com.ecoverde.estateagency.model.entity.BlogComment;
 import com.ecoverde.estateagency.model.service.BlogCommentServiceModel;
 import com.ecoverde.estateagency.model.service.BlogServiceModel;
 import com.ecoverde.estateagency.service.BlogCommentService;
@@ -96,7 +97,8 @@ public class BlogController {
 
         blogCommentBindingModel.setAuthor(this.userService.findByUsername(principal.getName()));
         blogCommentBindingModel.setPublishedAt(LocalDateTime.now());
-        this.blogCommentService.addBlogComment(this.modelMapper.map(blogCommentBindingModel, BlogCommentServiceModel.class));
+        BlogCommentServiceModel bcsm = this.modelMapper.map(blogCommentBindingModel, BlogCommentServiceModel.class);
+        this.blogCommentService.addBlogComment(bcsm);
         this.blogService.addBlogComment(title,blogCommentBindingModel.getCommentTitle());
         modelAndView.addObject("title",title);
         modelAndView.setViewName("redirect:/blog/details/{title}");

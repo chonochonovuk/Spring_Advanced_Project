@@ -15,6 +15,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 
+import javax.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -65,6 +67,11 @@ public class UserServiceImpl implements UserService {
     public UserServiceModel findByUsername(String username) {
         return this.userRepository.findByUsername(username).map(user -> this.modelMapper
         .map(user,UserServiceModel.class)).orElse(null);
+    }
+
+    @Override
+    public Set<User> findAllEnabledFalseUsers() {
+        return this.userRepository.findAllByEnabledFalse();
     }
 
     @Override
@@ -124,6 +131,24 @@ public class UserServiceImpl implements UserService {
         this.userRepository.saveAndFlush(this.modelMapper.map(usm,User.class));
     }
 
+    @Transactional
+    @Override
+    public void deleteUserByUsername(String username) {
+        if (this.findByUsername(username) != null){
+            this.userRepository.deleteByUsername(username);
+        }
+    }
+
+    @Transactional
+    @Override
+    public void deleteAllNotEnabledUsers() {
+         if (this.findAllEnabledFalseUsers() != null){
+             Set<User> notEnabled = this.findAllEnabledFalseUsers();
+             for (User u: notEnabled) {
+                 this.deleteUserByUsername(u.getUsername());
+             }
+         }
+    }
 
     @Override
     public void usersInit() {
@@ -221,5 +246,7 @@ public class UserServiceImpl implements UserService {
        }
 
     }
+
+
 
 }

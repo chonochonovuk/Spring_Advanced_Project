@@ -44,7 +44,9 @@ function fire_ajax_submit() {
                 collectAll +=  '<div class="col-md-12 heading-section text-center">' +
                   '<h4 class="mb-2 text-danger">'+ data.message +'</h4>' +
                     '</div>';
-            }else {
+            }
+
+            if(data.result != null){
                 $.each(data.result, function (index,value) {
 
                     let im = '<img class="card-img-top" src="'+ value.photos.url +'" alt="Card image cap">';

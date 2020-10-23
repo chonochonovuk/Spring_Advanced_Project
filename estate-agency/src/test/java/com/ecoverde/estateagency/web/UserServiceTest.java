@@ -105,4 +105,24 @@ public class UserServiceTest {
         UserDetails userDetails = this.userService.loadUserByUsername("pesho");
         Assert.assertNotNull(userDetails);
     }
+
+    @Test
+    public void testDeleteNotEnabledUser(){
+        User user = this.userRepository.findByUsername("stamat").orElse(null);
+        User user2 = this.userRepository.findByUsername("stoiko").orElse(null);
+        if (user != null){
+            this.userService.changeUserStatus(user.getUsername(),"DISABLED");
+        }
+
+        if (user2 != null){
+            user2.setEnabled(false);
+            this.userService.changeUserStatus(user2.getUsername(),"DISABLED");
+        }
+        this.userService.deleteAllNotEnabledUsers();
+        Assert.assertEquals(0,this.userService.findAllEnabledFalseUsers().size());
+        User userSt = this.userRepository.findByUsername("stamat").orElse(null);
+        User userSi = this.userRepository.findByUsername("stoiko").orElse(null);
+        Assert.assertNull(userSt);
+        Assert.assertNull(userSi);
+    }
 }

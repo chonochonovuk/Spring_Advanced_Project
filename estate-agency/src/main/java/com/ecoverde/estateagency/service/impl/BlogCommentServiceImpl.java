@@ -9,6 +9,9 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
+import java.util.Set;
+
 @Service
 public class BlogCommentServiceImpl implements BlogCommentService {
     private final BlogCommentRepository blogCommentRepository;
@@ -20,6 +23,30 @@ public class BlogCommentServiceImpl implements BlogCommentService {
         this.blogCommentRepository = blogCommentRepository;
         this.userService = userService;
         this.modelMapper = modelMapper;
+    }
+
+    @Override
+    public Set<BlogComment> findAllByAuthorUsername(String username) {
+        return this.blogCommentRepository.findAllByAuthorUsername(username);
+    }
+
+    @Transactional
+    @Override
+    public void deleteByTitle(String title) {
+        if (this.findByTitle(title) != null){
+            this.blogCommentRepository.deleteByTitle(title);
+        }
+    }
+
+    @Transactional
+    @Override
+    public void deleteAllByAuthorUsername(String username) {
+          if (this.findAllByAuthorUsername(username) != null){
+             Set<BlogComment> toDelete = this.findAllByAuthorUsername(username);
+              for (BlogComment bc:toDelete) {
+                  this.deleteByTitle(bc.getTitle());
+              }
+          }
     }
 
     @Override

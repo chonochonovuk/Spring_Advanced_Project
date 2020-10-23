@@ -18,6 +18,12 @@ import java.util.Set;
 public interface PropertyService {
     void propertiesInit();
 
+    void deleteByPropertyName(String propertyName);
+
+    void deletePropertiesByOwnerUsername(String username);
+
+    Set<Property> findAllPropertiesByOwnerUsername(String username);
+
     PropertyServiceModel findByPropertyName(String propertyName);
 
     PropertyServiceModel mapBindingModelToService(PropertyAddBindingModel propertyAddBindingModel) throws IOException;

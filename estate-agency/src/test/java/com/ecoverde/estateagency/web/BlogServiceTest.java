@@ -1,5 +1,6 @@
 package com.ecoverde.estateagency.web;
 
+import com.ecoverde.estateagency.model.binding.BlogAddBindingModel;
 import com.ecoverde.estateagency.model.entity.Blog;
 import com.ecoverde.estateagency.model.entity.BlogComment;
 import com.ecoverde.estateagency.model.entity.User;
@@ -8,6 +9,7 @@ import com.ecoverde.estateagency.model.service.BlogServiceModel;
 import com.ecoverde.estateagency.model.service.UserServiceModel;
 import com.ecoverde.estateagency.repositories.BlogRepository;
 import com.ecoverde.estateagency.service.BlogCommentService;
+import com.ecoverde.estateagency.service.BlogService;
 import com.ecoverde.estateagency.service.RoleService;
 import com.ecoverde.estateagency.service.UserService;
 import org.junit.After;
@@ -34,6 +36,10 @@ import java.util.Set;
 @SpringBootTest
 @AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.H2)
 public class BlogServiceTest {
+
+    @Autowired
+    private BlogService blogService;
+
     @Autowired
     private BlogRepository blogRepository;
 
@@ -94,5 +100,18 @@ public class BlogServiceTest {
         Assert.assertEquals(1,blog.getComments().size());
 
         Assert.assertEquals("pesho",blog.getAuthor().getUsername());
+    }
+
+    @Test
+    public void testAddComment(){
+        BlogCommentServiceModel blogC = new BlogCommentServiceModel();
+        blogC.setAuthor(this.userService.findByUsername("pesho"));
+        blogC.setPublishedAt(LocalDateTime.now());
+        blogC.setTitle("Airport One");
+        blogC.setContent("Once at the airport, before then");
+        this.blogCommentService.addBlogComment(blogC);
+        this.blogService.addBlogComment("Living In Bulgaria, A Village Life","Airport One");
+        BlogServiceModel blogServiceModel = this.blogService.findByTitle("Living In Bulgaria, A Village Life");
+        Assert.assertEquals(2,blogServiceModel.getComments().size());
     }
 }

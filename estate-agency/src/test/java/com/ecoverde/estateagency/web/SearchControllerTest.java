@@ -54,6 +54,7 @@ public class SearchControllerTest {
 
     @Autowired
     private PropertyService propertyService;
+
     @Autowired
     private PropertyTypeService propertyTypeService;
 
@@ -67,7 +68,7 @@ public class SearchControllerTest {
     private UserService userService;
 
     @Autowired
-    private ModelMapper modelMapper;
+    private ObjectMapper objectMapper;
 
     @Autowired
     private WebApplicationContext webApplicationContext;
@@ -135,10 +136,22 @@ public class SearchControllerTest {
     @WithMockUser("pesho")
     public void testPropertySearch() throws Exception {
 
+        PropertySearchModel propertySearchModel = new PropertySearchModel();
+        propertySearchModel.setKeyword("sea");
+        propertySearchModel.setPropertyType("House");
+        propertySearchModel.setLocation("Burgas");
+        propertySearchModel.setPrice(new BigDecimal(200000));
+
+        String json = objectMapper.writeValueAsString(propertySearchModel);
+
         mvc.perform(post("/search")
         .with(csrf())
-               .contentType(MediaType.APPLICATION_JSON_VALUE)
-        .content("{\"keyword\":\"apt\",\"propertyType\":\"HOUSE\",\"location\":\"\",\"price\":\"200000\"}"))
-        .andExpect(status().isOk());
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(json)
+                .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message",is("Success")))
+                .andExpect(jsonPath("$.result",hasSize(1)))
+                .andExpect(jsonPath("$.result[0].propertyName",is("Sveti Vlas Pirin")));
     }
 }

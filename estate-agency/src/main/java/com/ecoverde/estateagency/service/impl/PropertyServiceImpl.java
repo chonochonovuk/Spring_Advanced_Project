@@ -13,6 +13,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -108,6 +109,31 @@ public class PropertyServiceImpl implements PropertyService {
 
 
     }
+
+    @Transactional
+    @Override
+    public void deleteByPropertyName(String propertyName) {
+        if (this.findByPropertyName(propertyName) != null){
+            this.propertyRepository.deleteByPropertyName(propertyName);
+        }
+    }
+
+    @Transactional
+    @Override
+    public void deletePropertiesByOwnerUsername(String username) {
+        if (this.findAllPropertiesByOwnerUsername(username) != null){
+            Set<Property> toDelete = this.findAllPropertiesByOwnerUsername(username);
+            for (Property p:toDelete) {
+                this.deleteByPropertyName(p.getPropertyName());
+            }
+        }
+    }
+
+    @Override
+    public Set<Property> findAllPropertiesByOwnerUsername(String username) {
+        return this.propertyRepository.findAllByOwnerUsername(username);
+    }
+
 
     @Override
     public PropertyServiceModel findByPropertyName(String propertyName) {
@@ -247,6 +273,8 @@ public class PropertyServiceImpl implements PropertyService {
                     propertySearchModel.getLocation());
             return matchingProperties;
         }
+
+
 
         matchingProperties = this.findAllByPropertyTypeAndPrice(propertySearchModel.getPropertyType(),propertySearchModel.getPrice());
         return matchingProperties;

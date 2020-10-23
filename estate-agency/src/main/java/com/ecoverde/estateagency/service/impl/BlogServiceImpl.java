@@ -14,6 +14,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -76,6 +77,30 @@ public class BlogServiceImpl implements BlogService {
         this.addBlog(post1);
         this.addBlog(post2);
         }
+    }
+
+    @Override
+    public Set<Blog> findAllBlogsByAuthorUsername(String username) {
+        return this.blogRepository.findAllByAuthorUsername(username);
+    }
+
+    @Transactional
+    @Override
+    public void deleteAllByAuthorUsername(String username) {
+       if (this.findAllBlogsByAuthorUsername(username) != null){
+          Set<Blog> toDelete = this.findAllBlogsByAuthorUsername(username);
+           for (Blog b:toDelete) {
+               this.deleteBlogByTitle(b.getTitle());
+           }
+       }
+    }
+
+    @Transactional
+    @Override
+    public void deleteBlogByTitle(String title) {
+       if (this.findByTitle(title) != null){
+           this.blogRepository.deleteByTitle(title);
+       }
     }
 
     @Override
