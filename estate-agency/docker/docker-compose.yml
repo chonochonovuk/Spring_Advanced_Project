@@ -1,0 +1,12 @@
+version: "3.7"
+services:
+  db:
+    image: "mariadb:10.5.8"
+    restart: always
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_DATABASE: estate_db
+      MYSQL_USER: chono
+      MYSQL_PASSWORD: chono0511
+      MYSQL_ROOT_PASSWORD: nE5kMc7JCGNqwDQN
